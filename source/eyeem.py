@@ -9,11 +9,11 @@ def connect(client_id, client_secret):
   global analyze_headers
 
   token_headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-  token_data = {
+  secrets = {
       'clientId': client_id,
       'clientSecret': client_secret
   }
-  r = requests.post('https://vision-api.eyeem.com/v1/token', headers=token_headers, data=token_data)
+  r = requests.post('https://vision-api.eyeem.com/v1/token', headers=token_headers, data=secrets)
   token_data = r.json()
   analyze_headers = {
       'Authorization': str(token_data['token_type'] + ' ' + token_data['access_token']),
@@ -29,7 +29,7 @@ def fetch_analysis(data):
     r = requests.post('https://vision-api.eyeem.com/v1/analyze', headers=analyze_headers, data=json.dumps(data))
     results = r.json()
     print(results)
-    time.sleep(2)  # max 30 images per minute
+    # time.sleep(2)  # max 30 images per minute
     return results
 
 def fetch_custom_endpoints(image_url):
@@ -57,8 +57,6 @@ AESTHETIC = 'AESTHETIC_SCORE'
 CUSTOM_ENDPOINTS = 'CUSTOM_ENDPOINTS'
 
 def score_image(image_url, tasks=[TAGS, AESTHETIC]):
-    scores = {}
-
     analysis_tasks = [{
       "type": task
     } for task in tasks if task in [TAGS, CAPTIONS, AESTHETIC]]
@@ -72,15 +70,16 @@ def score_image(image_url, tasks=[TAGS, AESTHETIC]):
     }
 
     results = fetch_analysis(analyze_data)
+    scores = {}
     first_result = results['responses'][0]
     if ('aesthetic_score' in first_result):
       scores['aesthetic'] = first_result['aesthetic_score']['score']
     if ('tags' in first_result):
-      scores['tags'] = first_result['tags']
+      scores['tags'] = json.dumps(first_result['tags'])
     if ('captions' in first_result):
-      scores['captions'] = first_result['captions']
+      scores['captions'] = json.dumps(first_result['captions'])
 
-    # Personalized scores within custom endpoints cannot be fetched with the same request as aesthetic scores
+    # Personalized scores within custom endpoints cannot be fetched with the same request
     if CUSTOM_ENDPOINTS in tasks:
         scores.update(fetch_custom_endpoints(image_url))
 
