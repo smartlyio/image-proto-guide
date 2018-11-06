@@ -56,7 +56,18 @@ CAPTIONS = 'CAPTIONS'
 AESTHETIC = 'AESTHETIC_SCORE'
 CUSTOM_ENDPOINTS = 'CUSTOM_ENDPOINTS'
 
-def score_image(image_url, tasks=[TAGS, AESTHETIC]):
+def score_image_file(filename, tasks=[TAGS, AESTHETIC]):
+  encoded_string = r''
+  with open(filename, "rb") as image_file:
+      encoded_string = base64.standard_b64encode(image_file.read()).decode('utf8')
+  
+  image = {'content': encoded_string}
+  return eyeem.score_image(encoded_string)
+
+def score_image_url(image_url, tasks=[TAGS, AESTHETIC]):
+  return score_image({'url': image_url}, tasks)
+
+def score_image(image, tasks):
     analysis_tasks = [{
       "type": task
     } for task in tasks if task in [TAGS, CAPTIONS, AESTHETIC]]
@@ -65,7 +76,7 @@ def score_image(image_url, tasks=[TAGS, AESTHETIC]):
     analyze_data = {
         'requests': [{
             'tasks': analysis_tasks,
-            'image': {'url': image_url}
+            'image': image
         }]
     }
 
