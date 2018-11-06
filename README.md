@@ -5,7 +5,9 @@ Guide to prototyping on top of vision APIs. Please read this file first.
 # Requirements
 
 1. Jupyter notebook, Python 3.6+, Pandas. You can get all of this at https://www.anaconda.com/download/#macos
-2. Git client to clone this repository, or just download the repo as a zip.
+2. Clone or download the repository
+  - with git: `git clone git@github.com:smartlyio/image-proto-guide.git`
+  - without git: https://github.com/smartlyio/image-proto-guide/archive/master.zip
 3. Account to EyeEm Vision API to get clientId and app secret. Create account here: https://eyeem.3scale.net/
 
 # Overview
