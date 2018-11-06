@@ -1,6 +1,7 @@
 import json
 import requests
 import time
+import base64
 
 analyze_headers = {}
 
@@ -29,10 +30,10 @@ def fetch_analysis(data):
     r = requests.post('https://vision-api.eyeem.com/v1/analyze', headers=analyze_headers, data=json.dumps(data))
     results = r.json()
     print(results)
-    # time.sleep(2)  # max 30 images per minute
+    time.sleep(2)  # max 30 images per minute
     return results
 
-def fetch_custom_endpoints(image_url):
+def fetch_custom_endpoints(image):
     scores = {}
     for model_name, model_id in custom_endpoints.items():
         analyze_data = {
@@ -41,7 +42,7 @@ def fetch_custom_endpoints(image_url):
                     'type': 'PERSONALIZED_SCORE',
                     'modelId': model_id
                 }],
-                'image': {'url': image_url}
+                'image': image
             }]
         }
         results = fetch_analysis(analyze_data)
@@ -80,18 +81,19 @@ def score_image(image, tasks):
         }]
     }
 
-    results = fetch_analysis(analyze_data)
     scores = {}
-    first_result = results['responses'][0]
-    if ('aesthetic_score' in first_result):
-      scores['aesthetic'] = first_result['aesthetic_score']['score']
-    if ('tags' in first_result):
-      scores['tags'] = json.dumps(first_result['tags'])
-    if ('captions' in first_result):
-      scores['captions'] = json.dumps(first_result['captions'])
+    if (len(analysis_tasks) > 0):
+      results = fetch_analysis(analyze_data)
+      first_result = results['responses'][0]
+      if ('aesthetic_score' in first_result):
+        scores['aesthetic'] = first_result['aesthetic_score']['score']
+      if ('tags' in first_result):
+        scores['tags'] = json.dumps(first_result['tags'])
+      if ('captions' in first_result):
+        scores['captions'] = json.dumps(first_result['captions'])
 
     # Personalized scores within custom endpoints cannot be fetched with the same request
     if CUSTOM_ENDPOINTS in tasks:
-        scores.update(fetch_custom_endpoints(image_url))
+        scores.update(fetch_custom_endpoints(image))
 
     return scores
