@@ -9,6 +9,7 @@ Guide to prototyping on top of vision APIs. Please read this file first.
    - with git: `git clone git@github.com:smartlyio/image-proto-guide.git`
    - without git: https://github.com/smartlyio/image-proto-guide/archive/master.zip
 3. Account to EyeEm Vision API to get clientId and app secret. Create account here: https://eyeem.3scale.net/
+4. Download the dataset and extract into the repository. This creates a folder called data
 
 # Overview
 
