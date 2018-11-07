@@ -63,7 +63,7 @@ def score_image_file(filename, tasks=[TAGS, AESTHETIC]):
       encoded_string = base64.standard_b64encode(image_file.read()).decode('utf8')
   
   image = {'content': encoded_string}
-  return eyeem.score_image(encoded_string)
+  return score_image(image, tasks)
 
 def score_image_url(image_url, tasks=[TAGS, AESTHETIC]):
   return score_image({'url': image_url}, tasks)
